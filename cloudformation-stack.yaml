@@ -122,7 +122,7 @@ Resources:
       Runtime: "python3.9"
       FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
       MemorySize: 128
-      Timeout: 120
+      Timeout: 30
       Environment:
         Variables:
           VARIAVEL_1: !Ref LambdaName
