@@ -5,8 +5,8 @@ Description: Projeto exemplo de como construir uma stack de serviços dentro da 
 
 #Podemos passar 'paramêtros' para o cloudformation 'provisionar' e assim não colocarmos código 'fixo' na construção
 # do projeto
-Parameters:
 
+Parameters:
 #Passo 1
   SnsName:
     Type: String
@@ -79,54 +79,53 @@ Resources:
                 aws:SourceArn:
                   !Ref SNSTopic
 
-    #Passo 5 - Vincular a FILA para o TÓPICO.
-    #Quando a mensagem for recebida pelo TÓPICO, ela será direcionada para a fila.
-    SQSSubscription:
-      Type: AWS::SNS::Subscription
-      Properties:
-        Endpoint: !GetAtt SQSQueue.Arn
-        Protocol: sqs
-        RawMessageDelivery: True
-        TopicArn: !Ref SNSTopic
+  #Passo 5 - Vincular a FILA para o TÓPICO.
+  #Quando a mensagem for recebida pelo TÓPICO, ela será direcionada para a fila.
+  SQSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !GetAtt SQSQueue.Arn
+      Protocol: sqs
+      RawMessageDelivery: True
+      TopicArn: !Ref SNSTopic
 
-    #Passo 6.0 - Declarar o uso do bucket para fazer vínculo na lambda
-    S3Bucket:
-      Type: AWS::S3::Bucket
-      Description: texto qualquer
-      Properties:
-        BucketName: inserir-um-nome-unico-globalmente
-        #VersioningConfiguration:
-        #  Status: Enabled
-    
-    #Passo 6.1 - Declaração da lambda para fazer vínculo com o event source mapping
-    LambdaFunction:
-      DependsOn: S3Bucket
-      Type: AWS::Lambda::Function
-      Properties:
-        Handler: "lambda.handler"
-        Role: 'arn:aws:iam::058264301464:role/LabRole'
-        #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
-        Code:
-          S3Bucket: !Ref S3Bucket
-          S3Key: "iot-consumo-energia-lambda.zip"
-        Runtime: "python3.9"
-        FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
-        MemorySize: 128
-        Timeout: 120
-        Environment:
-          Variables:
-            VARIAVEL_1: !Ref LambdaName
-            VARIAVEL_2: !Ref SNSTopic
-            VARIAVEL_3: !Ref SNSTopic
+  #Passo 6.0 - Declarar o uso do bucket para fazer vínculo na lambda
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Description: texto qualquer
+    Properties:
+      BucketName: inserir-um-nome-unico-globalmente
+      #VersioningConfiguration:
+      #  Status: Enabled
+  
+  #Passo 6.1 - Declaração da lambda para fazer vínculo com o event source mapping
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: "lambda.handler"
+      Role: 'arn:aws:iam::058264301464:role/LabRole'
+      #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: "iot-consumo-energia-lambda.zip"
+      Runtime: "python3.9"
+      FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
+      MemorySize: 128
+      Timeout: 120
+      Environment:
+        Variables:
+          VARIAVEL_1: !Ref LambdaName
+          VARIAVEL_2: !Ref SNSTopic
+          VARIAVEL_3: !Ref SNSTopic
 
-    #Passo 6.2 - Fazer o vínculo da fila para a função
-    # Assim, quando uma mensagem 'chegar' na fila, ela será 'enviada' para a função
-    FunctionEventSourceMapping:
-      Type: AWS::Lambda::EventSourceMapping
-      Properties:
-        #Número de mensagem enviada para a fila (sqs)
-        BatchSize: 10
-        #Origem da mensagem
-        EventSourceArn: !GetAtt SQSQueue.Arn
-        #Destino da mensagem
-        FunctionName: !GetAtt LambdaFunction.Arn
+  #Passo 6.2 - Fazer o vínculo da fila para a função
+  # Assim, quando uma mensagem 'chegar' na fila, ela será 'enviada' para a função
+  FunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      #Número de mensagem enviada para a fila (sqs)
+      BatchSize: 10
+      #Origem da mensagem
+      EventSourceArn: !GetAtt SQSQueue.Arn
+      #Destino da mensagem
+      FunctionName: !GetAtt LambdaFunction.Arn
