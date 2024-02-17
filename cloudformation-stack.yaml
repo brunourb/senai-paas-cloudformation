@@ -25,6 +25,15 @@ Parameters:
     Description: Nome da fila principal
     Default: sqs-aluno
 
+#Passo 6.1
+#https://github.com/aws-samples/aws-cloudformation-inline-python-lambda-example/blob/main/base-cfn-lambda.yml
+  LambdaName:
+    Type: String
+    Description: Nome da Lambda
+    Default: iot-consumo-energia-lambda
+    MinLength: '1'
+    MaxLength: '128'
+################################################################################
 Resources:
   #Passo 1 -- Definição do tópico
   SNSTopic:
@@ -79,14 +88,36 @@ Resources:
         Protocol: sqs
         RawMessageDelivery: True
         TopicArn: !Ref SNSTopic
+
+    #Passo 6.0 - Declarar o uso do bucket para fazer vínculo na lambda
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Description: texto qualquer
+      Properties:
+        BucketName: inserir-um-nome-unico-globalmente
+        #VersioningConfiguration:
+        #  Status: Enabled
     
     #Passo 6.1 - Declaração da lambda para fazer vínculo com o event source mapping
     LambdaFunction:
+      DependsOn: S3Bucket
       Type: AWS::Lambda::Function
       Properties:
         Handler: "lambda.handler"
         Role: 'arn:aws:iam::058264301464:role/LabRole'
-        
+        #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
+        Code:
+          S3Bucket: !Ref S3Bucket
+          S3Key: "iot-consumo-energia-lambda.zip"
+        Runtime: "python3.9"
+        FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
+        MemorySize: 128
+        Timeout: 120
+        Environment:
+          Variables:
+            VARIAVEL_1: !Ref LambdaName
+            VARIAVEL_2: !Ref SNSTopic
+            VARIAVEL_3: !Ref SNSTopic
 
     #Passo 6.2 - Fazer o vínculo da fila para a função
     # Assim, quando uma mensagem 'chegar' na fila, ela será 'enviada' para a função
@@ -98,14 +129,4 @@ Resources:
         #Origem da mensagem
         EventSourceArn: !GetAtt SQSQueue.Arn
         #Destino da mensagem
-        FunctionName: !GetAtt xxxx
-
-
-
-
-
-  # SNSTopic:
-  #   Type: 'AWS::SNS::Topic'
-  #   Properties:
-  #     DisplayName: sns-aluno
-  #     TopicName: sns-aluno
+        FunctionName: !GetAtt LambdaFunction.Arn
