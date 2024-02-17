@@ -1,0 +1,111 @@
+#https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: Projeto exemplo de como construir uma stack de serviços dentro da AWS
+
+
+#Podemos passar 'paramêtros' para o cloudformation 'provisionar' e assim não colocarmos código 'fixo' na construção
+# do projeto
+Parameters:
+
+#Passo 1
+  SnsName:
+    Type: String
+    Description: Nome da SNS
+    Default: sns-aluno
+
+#Passo 2
+  SqsQueueDqlName:
+    Type: String
+    Description: Nome da DLQ (Dead Letter Queue)
+    Default: sqs-aluno-dlq
+
+#Passo 3
+  SqsQueueName:
+    Type: String
+    Description: Nome da fila principal
+    Default: sqs-aluno
+
+Resources:
+  #Passo 1 -- Definição do tópico
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Ref SnsName
+      TopicName: !Ref SnsName
+
+  #Passo 2 -- Definição da fila morta (Dead Letter Queue)
+  SQSDlqQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref SqsQueueDqlName
+    
+  #Passo 3 -- Definição da fila 'principal'
+  SQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref SqsQueueName
+      RedrivePolicy:
+        # Referência da fila morta para que a 'fila principal', possa mandar mensagem
+        deadLetterTargetArn: !GetAtt SQSDlqQueue.Arn
+        #Número de tentativas antes de enviar a mensagem para a fila morta
+        maxReceiveCount: 5
+
+  #Passo 4 Permite que o tópico possa enviar mensagem para a fila
+  SQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref SQSQueue
+      PolicyDocument:
+        Statement:
+          - Sid: Permite que a SNS faça a publicação (envio de mensagem) para uma fila
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - "SQS:SendMessage"
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  !Ref SNSTopic
+
+    #Passo 5 - Vincular a FILA para o TÓPICO.
+    #Quando a mensagem for recebida pelo TÓPICO, ela será direcionada para a fila.
+    SQSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: !GetAtt SQSQueue.Arn
+        Protocol: sqs
+        RawMessageDelivery: True
+        TopicArn: !Ref SNSTopic
+    
+    #Passo 6.1 - Declaração da lambda para fazer vínculo com o event source mapping
+    LambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Handler: "lambda.handler"
+        Role: 'arn:aws:iam::058264301464:role/LabRole'
+        
+
+    #Passo 6.2 - Fazer o vínculo da fila para a função
+    # Assim, quando uma mensagem 'chegar' na fila, ela será 'enviada' para a função
+    FunctionEventSourceMapping:
+      Type: AWS::Lambda::EventSourceMapping
+      Properties:
+        #Número de mensagem enviada para a fila (sqs)
+        BatchSize: 10
+        #Origem da mensagem
+        EventSourceArn: !GetAtt SQSQueue.Arn
+        #Destino da mensagem
+        FunctionName: !GetAtt xxxx
+
+
+
+
+
+  # SNSTopic:
+  #   Type: 'AWS::SNS::Topic'
+  #   Properties:
+  #     DisplayName: sns-aluno
+  #     TopicName: sns-aluno
