@@ -117,3 +117,18 @@ aws lambda create-function \
 }
 
 ```
+
+### Execução da stack no cloudoformation via CLI
+
+```shell
+aws cloudformation create-stack \
+    --stack-name 'nome-da-stack' \
+    --capabilities CAPABILITY_IAM \
+    --template-body file://$(pwd)/cloudformation-stack.yaml
+```
+
+```shell
+aws cloudformation wait \
+    stack-create-complete \
+    --stack-name 'nome-da-stack'
+```
