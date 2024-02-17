@@ -33,6 +33,17 @@ Parameters:
     Default: iot-consumo-energia-lambda
     MinLength: '1'
     MaxLength: '128'
+
+  S3Bucket:
+    Type: String
+    Description: Nome do bucket
+    Default: inserir-um-nome-unico-globalmente
+
+  S3Key:
+    Type: String
+    Description: Nome do arquivo
+    Default: iot-consumo-energia.zip
+
 ################################################################################
 Resources:
   #Passo 1 -- Definição do tópico
@@ -90,11 +101,11 @@ Resources:
       TopicArn: !Ref SNSTopic
 
   #Passo 6.0 - Declarar o uso do bucket para fazer vínculo na lambda
-  S3Bucket:
-    Type: AWS::S3::Bucket
-    Description: texto qualquer
-    Properties:
-      BucketName: inserir-um-nome-unico-globalmente
+  #S3Bucket:
+  #  Type: AWS::S3::Bucket
+  #  Description: texto qualquer
+  #  Properties:
+  #    BucketName: inserir-um-nome-unico-globalmente
       #VersioningConfiguration:
       #  Status: Enabled
   
@@ -107,7 +118,7 @@ Resources:
       #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
       Code:
         S3Bucket: !Ref S3Bucket
-        S3Key: "iot-consumo-energia-lambda.zip"
+        S3Key: !Ref S3Key
       Runtime: "python3.9"
       FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
       MemorySize: 128

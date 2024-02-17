@@ -118,12 +118,22 @@ aws lambda create-function \
 
 ```
 
-### Fazer upload do arquivo para o S3
+### Configuração do bucket S3
+
+#### Criar o arquivo zip
 
 ```shell
 zip iot-consumo-energia.zip lambda.py requirements.txt
+```
 
-aws s3 cp iot-consumo-energia.zip s3://inserir-um-nome-unico-globalmente/iot-consumo-energia.zip
+#### Criar o bucket via cli
+```shell
+aws s3 mb s3://inserir-um-nome-unico-globalmente --profile=aws_academy --region=us-east-1
+```
+
+#### Fazer upload do arquivo
+```shell
+aws s3 cp iot-consumo-energia.zip s3://inserir-um-nome-unico-globalmente/iot-consumo-energia.zip --profile=aws_academy
 ```
 
 ### Execução da stack no cloudoformation via CLI
