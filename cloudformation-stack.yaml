@@ -11,19 +11,19 @@ Parameters:
   SnsName:
     Type: String
     Description: Nome da SNS
-    Default: sns-aluno
+    Default: sns-iot-consumo-energia
 
 #Passo 2
   SqsQueueDqlName:
     Type: String
     Description: Nome da DLQ (Dead Letter Queue)
-    Default: sqs-aluno-dlq
+    Default: sqs-iot-consumo-energia-dlq
 
 #Passo 3
   SqsQueueName:
     Type: String
     Description: Nome da fila principal
-    Default: sqs-aluno
+    Default: sqs-iot-consumo-energia
 
 #Passo 6.1
 #https://github.com/aws-samples/aws-cloudformation-inline-python-lambda-example/blob/main/base-cfn-lambda.yml

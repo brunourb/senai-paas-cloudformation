@@ -120,15 +120,23 @@ aws lambda create-function \
 
 ### Execução da stack no cloudoformation via CLI
 
+## Criar a Stack
 ```shell
-aws cloudformation create-stack \
+aws cloudformation create-stack --profile=aws_academy --region=us-east-1 \
     --stack-name 'nome-da-stack' \
     --capabilities CAPABILITY_IAM \
     --template-body file://$(pwd)/cloudformation-stack.yaml
 ```
 
+## Acompanhar a criação da stack
+
 ```shell
-aws cloudformation wait \
-    stack-create-complete \
+aws cloudformation wait --profile=aws_academy --region=us-east-1 stack-create-complete \
+    --stack-name 'nome-da-stack'
+```
+
+## Deletar a stack
+```shell
+aws cloudformation delete-stack --profile=aws_academy --region=us-east-1 \
     --stack-name 'nome-da-stack'
 ```
