@@ -118,6 +118,14 @@ aws lambda create-function \
 
 ```
 
+### Fazer upload do arquivo para o S3
+
+```shell
+zip iot-consumo-energia.zip lambda.py requirements.txt
+
+aws s3 cp iot-consumo-energia.zip s3://inserir-um-nome-unico-globalmente/iot-consumo-energia.zip
+```
+
 ### Execução da stack no cloudoformation via CLI
 
 ## Criar a Stack
