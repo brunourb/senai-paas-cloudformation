@@ -24,8 +24,8 @@ Parameters:
   SqsQueueName:
     Type: String
     Description: Nome da fila principal
-    Default: @@SqsQueueDqlName@@
-    #sed ‘s/@@SqsQueueDqlName@@/sqs-iot-consumo-energia-dlq/g’ cloudformation-stack.yaml
+    Default: @@SqsQueueName@@
+    #sed ‘s/@@SqsQueueName@@/sqs-iot-consumo-energia/g’ cloudformation-stack.yaml
     #========================
     #Default: sqs@@name@@dlq
     #Outra forma de fazer a alteração: sed ‘s/@@name@@/-iot-consumo-energia-/g’ cloudformation-stack.yaml
