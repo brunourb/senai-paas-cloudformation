@@ -70,6 +70,8 @@ def handler(event, context):
         
     except json.JSONDecodeError as e:
         logger.error(f"Erro ao fazer parse do JSON: {str(e)}")
+        #Tratamento de erro
+        return {"statusCode": 400, "body": "Erro ao decodificar JSON no corpo da mensagem"}
     
     
     #resultado = processar_dados(event, context)
