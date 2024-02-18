@@ -19,11 +19,7 @@ Exemplo de um payload em SQS
     {
       "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
       "receiptHandle": "MessageReceiptHandle",
-      "body": "{  
-                       \"Message\":\"   {  
-                            \\"ApplicationReference\\":2
-                        }\"
-                     }",
+      "body": "{\"grupo:\":\"xxxx\",\"idDispositivo\":123123123,\"consumo\":40}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1523232000000",
@@ -62,8 +58,19 @@ def handler(event, context):
     body_data = event['Records'][0]['body']
 
     logger.info(f"Extratindo conteúdo de uma mensagem recebida de uma SQS: {body_data}")
+
+    try:
+        #Converter o texto(json) em dicionário
+        #{\"grupo:\":\"xxxx\",\"idDispositivo\":123123123,\"consumo\":40}
+        data = json.loads(body_data)
+        logger.info(f"Início processamento de dados do grupo nº {data['grupo']}")
+        logger.info(f"Início processamento de dados do dispositivo nº {data['idDispositivo']}")
+        logger.info(f"Início processamento de dados do consumo nº {data['consumo']}")
+
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Erro ao fazer parse do JSON: {str(e)}")
     
-    #logger.info(f"Início processamento de dados do dispositivo nº {event['idDispositivo']}")
     
     #resultado = processar_dados(event, context)
     

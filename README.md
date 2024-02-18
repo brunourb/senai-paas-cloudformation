@@ -73,3 +73,18 @@ aws cloudformation wait --profile=aws_academy --region=us-east-1 stack-create-co
 aws cloudformation delete-stack --profile=aws_academy --region=us-east-1 \
     --stack-name 'iot-consumo-energia-stack'
 ```
+
+## Para atualizar somente a lambda
+
+**Execução do método via cli - WINDOWS (CMD)**
+
+```shell
+aws lambda update-function-code --function-name %NOME_FUNCAO% --zip-file fileb://%ARQUIVO_ZIP%
+```
+
+**Execução do método via cli - LINUX**
+```shell
+export NOME_FUNCAO=iot-energia-lambda
+export ARQUIVO_ZIP=iot-energia.zip
+aws lambda update-function-code --function-name $NOME_FUNCAO --zip-file fileb://$ARQUIVO_ZIP --profile=aws_academy --region=us-east-1
+```
