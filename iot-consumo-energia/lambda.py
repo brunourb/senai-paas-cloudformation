@@ -57,6 +57,11 @@ def handler(event, context):
     
     #ID da requisição do lambda
     logger.info(f"Lambda Request ID: {context.aws_request_id}")
+
+    #Acessando o campo 'body' do primeiro registro em 'Records'
+    body_data = event['Records'][0]['body']
+
+    logger.info(f"Extratindo conteúdo de uma mensagem recebida de uma SQS: {body_data}")
     
     #logger.info(f"Início processamento de dados do dispositivo nº {event['idDispositivo']}")
     
