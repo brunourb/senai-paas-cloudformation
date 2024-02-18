@@ -11,26 +11,26 @@ Parameters:
   SnsName:
     Type: String
     Description: Nome da SNS
-    Default: sns-iot-direcao-vento
+    Default: sns-iot-ph-solo
 
 #Passo 2
   SqsQueueDqlName:
     Type: String
     Description: Nome da DLQ (Dead Letter Queue)
-    Default: sqs-iot-direcao-vento-dlq
+    Default: sqs-iot-ph-solo-dlq
 
 #Passo 3
   SqsQueueName:
     Type: String
     Description: Nome da fila principal
-    Default: sqs-iot-direcao-vento
+    Default: sqs-iot-ph-solo
 
 #Passo 6.1
 #https://github.com/aws-samples/aws-cloudformation-inline-python-lambda-example/blob/main/base-cfn-lambda.yml
   LambdaName:
     Type: String
     Description: Nome da Lambda
-    Default: iot-direcao-vento-lambda
+    Default: iot-ph-solo-lambda
     MinLength: '1'
     MaxLength: '128'
 
@@ -42,7 +42,7 @@ Parameters:
   S3Key:
     Type: String
     Description: Nome do arquivo
-    Default: iot-direcao-vento.zip
+    Default: iot-ph-solo.zip
 
 ################################################################################
 Resources:
