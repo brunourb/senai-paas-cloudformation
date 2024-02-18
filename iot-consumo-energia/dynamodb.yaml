@@ -1,0 +1,26 @@
+#https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: Projeto exemplo de como construir uma stack de serviços dentro da AWS
+
+################################################################################
+Resources:
+   MinhaTabelaDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: iot-consumo-energia
+      #https://usefulangle.com/post/332/dynamodb-attribute-types
+      #https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html
+      AttributeDefinitions:
+        - AttributeName: dataEvento
+          AttributeType: S
+        - AttributeName: idDispositivo
+          AttributeType: S
+      KeySchema:
+      #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-keyschema.html
+        - AttributeName: dataEvento
+          KeyType: HASH
+        - AttributeName: idDispositivo
+          KeyType: RANGE                   
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1

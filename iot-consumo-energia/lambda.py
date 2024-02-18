@@ -77,9 +77,61 @@ def handler(event, context):
         return {"statusCode": 400, "body": "Erro ao decodificar JSON no corpo da mensagem"}
     
     
-    #resultado = processar_dados(event, context)
+    resultado = processar_dados(data, context)
     
     #logger.info(f"Fim processamento de dados do dispositivo nº {event['idDispositivo']}")    
     #logger.debug(resultado)
     
     return None
+
+def processar_dados(data, context):
+    response = ""
+    
+    # Inserir dependências no projeto do dynamodb seja o resource e cliente.
+    # Um manipula os dados dentro do dynamo e o cilente, faz as consultas.
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('iot-consumo-energia')
+    
+    #Gerar o timestamp (registro do evento) para persistência
+    dataEvento = (datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
+    
+    #Capturando dados que foram enviados por um recurso: lambda, SQS (fila), SNS(tópico)
+    #As informações 'chegam' na função através de EVENTOS
+    grupo = data['grupo']
+    idDispositivo = data['idDispositivo']
+    consumo = data['consumo']
+
+    
+    #Preparar os dados para inserção no DYNAMODB
+    #Chamar a instância do cliente para 'manipular' as informações no banco de dados
+    try:
+        
+        #Preparando dados para persistência
+        item={
+                'dataEvento': dataEvento,
+                'idDispositivo': idDispositivo,
+                'grupo': grupo,
+                'consumo': int(consumo)
+            }
+        logger.info("Criado objeto para persistência")
+        
+        #Persistência dos dados
+        #response = dynamodb.put_item(TableName='temperatura',Item=item)
+        response = table.put_item(Item=item)
+        
+        #Retorno dos dados
+        return {
+            'statusCode': 200,
+            'message': json.dumps('Registro inserido com sucesso!'),
+            'data': [item],
+        }
+        
+    except:
+        logger.debug(f"Valores recebidos: {item}")
+        logger.debug(f"Retorno dynamoDB: {response}")
+        #https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+        return {
+            'statusCode': 400,
+            'message': json.dumps('Erro ao registrar temperatura.'),
+            'data': [item],
+        }
