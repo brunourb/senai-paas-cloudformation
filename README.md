@@ -28,7 +28,7 @@ Steps:
 
 Neste exemplo estamos utilizando o profile=aws_academy e region=us-east=1. Caso você esteja utilizando o profile default, não é necessário informar estes parâmetros (profile,region).
 
-O nome do bucket deve ser único globalmente, portanto ao executar o comando abaixo, insera um nome adequado ao uso do seu serviço. O nome inserir-um-nome-unico-globalmente já está em uso, use outro nome.
+O nome do bucket deve ser único globalmente, portanto ao executar o comando abaixo, inserir um nome adequado ao uso do seu serviço. O nome inserir-um-nome-unico-globalmente já está em uso, use outro nome.
 
 ```shell
 aws s3 mb s3://inserir-um-nome-unico-globalmente --profile=aws_academy --region=us-east-1

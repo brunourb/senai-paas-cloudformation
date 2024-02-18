@@ -48,8 +48,6 @@ def handler(event, context):
     #É o contexto/instância/domínio de serviços que o serviço
     #  utilizador (lambda) pode acessar/identificar
 
-
-
     #Nome da função com ARN (item identificador)
     logger.info(f"Lambda function ARN: {context.invoked_function_arn}")
     
