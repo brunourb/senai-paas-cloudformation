@@ -2,159 +2,71 @@
 
 # FATESG
 
-## Configuração ambiente AWS
+## Cenário/Problema:
+![image info](./assets/img/farm.png)
 
-## Deploy de função zip
+## Integração entre os serviços AWS
 
-### Criar nova função à partir de um zip
+Steps:
 
-Para publição via CLI:
+0. Criar fila morta
+1. Criar fila 'normal' e vincular a fila morta na fila 'normal'
+2. Criar o o SNS
+3. Fazer o vínculo do SNS para SQS, ou seja, a mensagem que chegaram no sns iremos enviar para a SQS
+4. Fazer a SQS 'triggar' ou disparar mensagem para a lambda
 
-**Detalhe**
+![image info](./assets/img/integration-services-aws.png)
+
+
+## Stack AWS
+
+![image info](./assets/img/infra-aws.png)
+
+## Provisionamento do ambiente na AWS
+
+### Criar o bucket via cli
+
+Neste exemplo estamos utilizando o profile=aws_academy e region=us-east=1. Caso você esteja utilizando o profile default, não é necessário informar estes parâmetros (profile,region).
+
 ```shell
-aws lambda create-function \
---function-name $NOME_FUNCAO \
---zip-file fileb://$ARQUIVO_ZIP.zip \
---runtime python3.9 \
---role $ARN_DA_ROLE_PARA_PUBLICACAO \
---handler $NOME_FUNCAO.$METODO_DEFINIDO_NO_ARQUIVO_PYTHON
+aws s3 mb s3://inserir-um-nome-unico-globalmente --profile=aws_academy --region=us-east-1
 ```
 
-**Detalhe para exportar dados como variável antes de executar o cli**
-```shell
-export NOME_FUNCAO=iot-consumo-energia-lambda
-export ARQUIVO_ZIP=iot-consumo-energia-lambda.zip
-export ARN_DA_ROLE_PARA_PUBLICACAO=arn:aws:iam::721974128630:role/LabRole
-export NOME_ARQUIVO=lambda
-export METODO_DEFINIDO_NO_ARQUIVO_PYTHON=lambda_handler
-export HANDLER=$NOME_ARQUIVO.$METODO_DEFINIDO_NO_ARQUIVO_PYTHON
-```
-
-**Execução do método via cli - LINUX**
-```shell
-aws lambda create-function \
---function-name $NOME_FUNCAO \
---zip-file fileb://$ARQUIVO_ZIP \
---runtime python3.9 \
---role $ARN_DA_ROLE_PARA_PUBLICACAO \
---handler $HANDLER
-```
-
-**Para usuários windows**
-```shell
-export NOME_FUNCAO=iot-consumo-energia-lambda
-export ARQUIVO_ZIP=iot-consumo-energia-lambda.zip
-export ARN_DA_ROLE_PARA_PUBLICACAO=arn:aws:iam::721974128630:role/LabRole
-export NOME_ARQUIVO=lambda
-export METODO_DEFINIDO_NO_ARQUIVO_PYTHON=lambda_handler
-export HANDLER=%NOME_ARQUIVO%.%METODO_DEFINIDO_NO_ARQUIVO_PYTHON%
-```
-**Execução do método via cli windows**
-```shell
-aws lambda create-function \
---function-name %NOME_FUNCAO% \
---zip-file fileb://%ARQUIVO_ZIP% \
---runtime python3.9 \
---role %ARN_DA_ROLE_PARA_PUBLICACAO% \
---handler %HANDLER%
-```
-
-#### O comando executado sem variável está conforme exemplo abaixo
-
-**Exemplo 1**
-```shell
-aws lambda create-function \
---function-name meu-app-python \
---zip-file fileb://meu-app-python.zip \
---runtime python3.9 \
---role arn:aws:iam::251822626625:role/LabRole \
---handler meu-app-python.lambda_handler
-```
-
-**Exemplo 2**
-```shell
-aws lambda create-function \
---function-name novaFuncao \
---runtime python3.9 z
---handler me-do-arquivo.lambda_handler \
---role arn:aws:iam::302614027063:role/LabRole \
---zip-file fileb://lambda_function.zip
-```
-#dTaBFso3
-**Exemplo 3**
-```shell
-aws lambda create-function \
---function-name function01 \
---zip-file fileb://lambda_function.zip \
---runtime python3.9 \
---role arn:aws:iam::251822626625:role/LabRole \
---handler lambda_function.lambda_handler --profile aws_academy --region us-east-1
-```
-### Resultado
-
-```json
-{
-    "FunctionName": "function03",
-    "FunctionArn": "arn:aws:lambda:us-east-1:251822626625:function:function03",
-    "Runtime": "python3.9",
-    "Role": "arn:aws:iam::251822626625:role/LabRole",
-    "Handler": "lambda_function.lambda_handler",
-    "CodeSize": 563,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2023-02-25T15:45:39.455+0000",
-    "CodeSha256": "gXgyb3wmShcyS3rm2nBZnRF0Myr0e4/KuAR3MA2on+M=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-        "Mode": "PassThrough"
-    },
-    "RevisionId": "f320acf6-3673-41e9-8a26-21f52542bbb6",
-    "State": "Pending",
-    "StateReason": "The function is being created.",
-    "StateReasonCode": "Creating",
-    "PackageType": "Zip"
-}
-
-```
-
-### Configuração do bucket S3
-
-#### Criar o arquivo zip
+### Criar o arquivo zip do projeto
 
 ```shell
 zip iot-consumo-energia.zip lambda.py requirements.txt
 ```
 
-#### Criar o bucket via cli
-```shell
-aws s3 mb s3://inserir-um-nome-unico-globalmente --profile=aws_academy --region=us-east-1
-```
-
-#### Fazer upload do arquivo
+### Fazer upload do arquivo
 ```shell
 aws s3 cp iot-consumo-energia.zip s3://inserir-um-nome-unico-globalmente/iot-consumo-energia.zip --profile=aws_academy
 ```
 
-### Execução da stack no cloudoformation via CLI
+---
+**NOTE**
 
-## Criar a Stack
+Os comandos abaixo devem ser executados dentro da pasta do dispositivo. As pastas tem prefixo iot-*
+
+---
+
+### Criar a Stack no cloudFormation
 ```shell
 aws cloudformation create-stack --profile=aws_academy --region=us-east-1 \
-    --stack-name 'nome-da-stack' \
+    --stack-name 'iot-consumo-energia-stack' \
     --capabilities CAPABILITY_IAM \
-    --template-body file://$(pwd)/cloudformation-stack.yaml
+    --template-body file://$(pwd)/stack.yaml
 ```
 
 ## Acompanhar a criação da stack
 
 ```shell
 aws cloudformation wait --profile=aws_academy --region=us-east-1 stack-create-complete \
-    --stack-name 'nome-da-stack'
+    --stack-name 'iot-consumo-energia-stack'
 ```
 
 ## Deletar a stack
 ```shell
 aws cloudformation delete-stack --profile=aws_academy --region=us-east-1 \
-    --stack-name 'nome-da-stack'
+    --stack-name 'iot-consumo-energia-stack'
 ```
