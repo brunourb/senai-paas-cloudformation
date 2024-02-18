@@ -13,7 +13,7 @@ echo "Alterando o nome da SqsQueueDqlName"
 sed -i "s/@@SqsQueueDqlName@@/$SqsQueueDqlName/g" cloudformation-stack.yaml
 
 echo "Alterando o nome da SqsQueueName"
-sed -i "s/@@SqsQueueDqlName@@/$SqsQueueName/g" cloudformation-stack.yaml
+sed -i "s/@@SqsQueueName@@/$SqsQueueName/g" cloudformation-stack.yaml
 
 echo "Alterando o nome da LambdaName"
 sed -i "s/@@LambdaName@@/$LambdaName/g" cloudformation-stack.yaml
