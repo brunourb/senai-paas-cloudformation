@@ -2,7 +2,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Projeto exemplo de como construir uma stack de serviços dentro da AWS
 
-
 #Podemos passar 'paramêtros' para o cloudformation 'provisionar' e assim não colocarmos código 'fixo' na construção
 # do projeto
 
@@ -11,26 +10,33 @@ Parameters:
   SnsName:
     Type: String
     Description: Nome da SNS
-    Default: sns-iot-consumo-energia
+    Default: @@SnsName@@
+    #sed ‘s/@@SnsName@@/sns-iot-consumo-energia/g’ cloudformation-stack.yaml
 
 #Passo 2
   SqsQueueDqlName:
     Type: String
     Description: Nome da DLQ (Dead Letter Queue)
-    Default: sqs-iot-consumo-energia-dlq
+    Default: @@SqsQueueDqlName@@
+    #sed ‘s/@@SqsQueueDqlName@@/sqs-iot-consumo-energia-dlq/g’ cloudformation-stack.yaml
 
 #Passo 3
   SqsQueueName:
     Type: String
     Description: Nome da fila principal
-    Default: sqs-iot-consumo-energia
+    Default: @@SqsQueueDqlName@@
+    #sed ‘s/@@SqsQueueDqlName@@/sqs-iot-consumo-energia-dlq/g’ cloudformation-stack.yaml
+    #========================
+    #Default: sqs@@name@@dlq
+    #Outra forma de fazer a alteração: sed ‘s/@@name@@/-iot-consumo-energia-/g’ cloudformation-stack.yaml
 
 #Passo 6.1
 #https://github.com/aws-samples/aws-cloudformation-inline-python-lambda-example/blob/main/base-cfn-lambda.yml
   LambdaName:
     Type: String
     Description: Nome da Lambda
-    Default: iot-consumo-energia-lambda
+    Default: @@LambdaName@@
+    #sed ‘s/@@LambdaName@@/iot-consumo-energia-lambda/g’ cloudformation-stack.yaml
     MinLength: '1'
     MaxLength: '128'
 
@@ -42,8 +48,8 @@ Parameters:
   S3Key:
     Type: String
     Description: Nome do arquivo
-    Default: iot-consumo-energia.zip
-
+    Default: @@S3Key@@.zip
+    #sed ‘s/@@S3Key@@/iot-consumo-energia/g’ cloudformation-stack.yaml
 ################################################################################
 Resources:
   #Passo 1 -- Definição do tópico
@@ -117,7 +123,9 @@ Resources:
       Role: 'arn:aws:iam::058264301464:role/LabRole'
       #https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
       Code:
+        #Nome da pasta (bucket)
         S3Bucket: !Ref S3Bucket
+        #Nome do arquivo (objeto)
         S3Key: !Ref S3Key
       Runtime: "python3.9"
       FunctionName: !Ref LambdaName #Usa a referência de atributo declarada anteriormente.
