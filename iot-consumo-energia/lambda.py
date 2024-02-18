@@ -55,14 +55,17 @@ def handler(event, context):
     logger.info(f"Lambda Request ID: {context.aws_request_id}")
 
     #Acessando o campo 'body' do primeiro registro em 'Records'
-    body_data = event['Records'][0]['body']
+    mensagemSQS = event['Records'][0]['body']
 
-    logger.info(f"Extratindo conteúdo de uma mensagem recebida de uma SQS: {body_data}")
+    logger.info(f"Extratindo conteúdo de uma mensagem recebida de uma SQS: {mensagemSQS}")
 
     try:
         #Converter o texto(json) em dicionário
         #{\"grupo:\":\"xxxx\",\"idDispositivo\":123123123,\"consumo\":40}
-        data = json.loads(body_data)
+        data = json.loads(mensagemSQS)
+
+        logger.info(f"Mensagem do dicionário data: {data}")
+
         logger.info(f"Início processamento de dados do grupo nº {data['grupo']}")
         logger.info(f"Início processamento de dados do dispositivo nº {data['idDispositivo']}")
         logger.info(f"Início processamento de dados do consumo nº {data['consumo']}")
