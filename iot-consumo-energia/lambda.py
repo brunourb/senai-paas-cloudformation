@@ -19,7 +19,7 @@ Exemplo de um payload em SQS
     {
       "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
       "receiptHandle": "MessageReceiptHandle",
-      "body": "{\"grupo:\":\"xxxx\",\"idDispositivo\":123123123,\"consumo\":40}",
+      "body": "{\"grupo\":\"xxxx\",\"idDispositivo\":123123123,\"consumo\":40}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1523232000000",
