@@ -79,6 +79,10 @@ aws cloudformation delete-stack --profile=aws_academy --region=us-east-1 \
 aws cloudformation update-stack --stack-name nome-da-sua-stack --template-body file://caminho_para_seu_arquivo.yaml --parameters SnsName=Chave,ParameterValue=Valor --capabilities CAPABILITY_IAM
 ```
 
+```shell
+aws cloudformation update-stack --stack-name iot-consumo-energia-dynamodb --template-body file://dynamodb.yaml --capabilities CAPABILITY_IAM
+```
+
 
 ## Para atualizar somente a lambda
 

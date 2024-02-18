@@ -109,7 +109,7 @@ def processar_dados(data, context):
         #Preparando dados para persistência
         item={
                 'dataEvento': dataEvento,
-                'idDispositivo': idDispositivo,
+                'idDispositivo': int(idDispositivo),
                 'grupo': grupo,
                 'consumo': int(consumo)
             }
